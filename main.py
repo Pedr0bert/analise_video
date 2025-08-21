@@ -13,7 +13,7 @@ if __name__ == "__main__":
     os.makedirs("results", exist_ok=True)
 
     # abre o CSV em modo de escrita (cria do zero a cada execução)
-    with open(results_file, "a", newline="", encoding="utf-8") as f:
+    with open(results_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         # cabeçalho
         writer.writerow(["FileName", "Width", "Height", "MediaLuminosidade", "MedianaLuminosidade", "Tremor"])
