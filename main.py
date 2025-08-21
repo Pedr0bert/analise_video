@@ -1,35 +1,43 @@
+import os
+import csv
 from utils.luminosity import calcular_luminosidade
 from utils.resolution import verify_resolution
 from utils.shake import verificar_tremor
-import csv
-
 
 
 if __name__ == "__main__":
-    video_path = "data/jogo.mp4"
-    
-    # Verifica a resolução do vídeo
-    width, height = verify_resolution(video_path)
-    #print(f"Resolução: {width}x{height}")
+    data_folder = "data"
+    results_file = "results/analise_video.csv"
 
-    # Calcula a luminosidade do vídeo
-    mediana_luminosidade, media_luminosidade = calcular_luminosidade(video_path)
-    #print(f"Mediana da luminosidade: {mediana_luminosidade:.2f}, Média da luminosidade: {media_luminosidade:.2f}")
+    # garante que a pasta results existe
+    os.makedirs("results", exist_ok=True)
 
-    # Verifica o tremor do vídeo
-    tremor = verificar_tremor(video_path)
-    #print(f"Nível de tremor (média de movimento): {tremor:.2f}")
-    
-    #with open("results/analise_video.csv", "w", newline="", encoding="utf-8") as f:
-    #    writer = csv.writer(f)
-    #
-    ## cabeçalho
-    #    writer.writerow(["Width","Height", "MediaLuminosidade", "MedianaLuminosidade", "Tremor"])
-    
-    with open("results/analise_video.csv", "a", newline="", encoding="utf-8") as f:
+    # abre o CSV em modo de escrita (cria do zero a cada execução)
+    with open(results_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        
-        writer.writerow([width, height, media_luminosidade, mediana_luminosidade, tremor])
+        # cabeçalho
+        writer.writerow(["FileName", "Width", "Height", "MediaLuminosidade", "MedianaLuminosidade", "Tremor"])
 
-    
-    
+        # percorre todos os vídeos da pasta data/
+        for filename in os.listdir(data_folder):
+            try:
+                
+                if filename.lower().endswith((".mp4", ".avi", ".mov", ".mkv")):
+                    video_path = os.path.join(data_folder, filename)
+                    print(f"Analisando: {filename}")
+
+                    # Resolução
+                    width, height = verify_resolution(video_path)
+
+                    # Luminosidade
+                    mediana_luminosidade, media_luminosidade = calcular_luminosidade(video_path)
+
+                    # Tremor
+                    tremor = verificar_tremor(video_path)
+
+                    # Escreve no CSV
+                    writer.writerow([filename, width, height, f"{media_luminosidade:.2f}", f"{mediana_luminosidade:.2f}", f"{tremor:.2f}"])
+            except Exception as e:
+                print(f"Erro ao processar {filename}: {e}")
+                
+    print(f"\n✅ Análise concluída! Resultados salvos em {results_file}")
