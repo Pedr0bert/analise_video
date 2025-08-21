@@ -20,8 +20,7 @@ if __name__ == "__main__":
 
         # percorre todos os vídeos da pasta data/
         for filename in os.listdir(data_folder):
-            try:
-                
+            try:                
                 if filename.lower().endswith((".mp4", ".avi", ".mov", ".mkv")):
                     video_path = os.path.join(data_folder, filename)
                     print(f"Analisando: {filename}")
